@@ -4,27 +4,6 @@
 
 :root {
   --radius: 0.625rem;
-  --background: #ffffff;
-  --foreground: #000000;
-  --card: #ffffff;
-  --card-foreground: #000000;
-  --popover: #ffffff;
-  --popover-foreground: #000000;
-  --primary: #bca16b;
-  --primary-foreground: #000000;
-  --secondary: #f4f4f4;
-  --secondary-foreground: #000000;
-  --muted: #f4f4f4;
-  --muted-foreground: #666666;
-  --accent: #f4f4f4;
-  --accent-foreground: #000000;
-  --destructive: #ff0000;
-  --border: #e5e5e5;
-  --input: #e5e5e5;
-  --ring: #bca16b;
-}
-
-.dark {
   --background: #000000;
   --foreground: #ffffff;
   --card: #111111;
@@ -50,6 +29,65 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-black text-white;
   }
+}
+
+/* Custom styles */
+.prose-gold {
+  --tw-prose-links: #bca16b;
+  --tw-prose-invert-links: #d4b87d;
+}
+
+.bg-gradient-overlay {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3));
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Scroll animations */
+.scroll-progress {
+  transition: width 150ms ease-out;
+}
+
+.scroll-to-top {
+  transition: all 300ms ease-out;
+}
+
+.scroll-to-top:hover {
+  background-color: #d4b87d;
+}
+
+/* Navigation styles */
+.nav-link {
+  transition: color 200ms ease-out;
+}
+
+.nav-link:hover {
+  color: #bca16b;
+}
+
+/* Card hover effects */
+.group:hover .group-hover\:scale-105 {
+  transform: scale(1.05);
+  transition: transform 500ms ease-out;
+}
+
+.group:hover .group-hover\:text-\[\#d4b87d\] {
+  color: #d4b87d;
+  transition: color 200ms ease-out;
 }
