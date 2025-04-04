@@ -177,9 +177,7 @@ export default function BlogPage() {
           ) : (
             <div className="text-center py-20">
               <h2 className="text-2xl font-bold mb-4">No posts found</h2>
-              <p className="text-gray-400">
-                Try adjusting your search or category filters to find what you're looking for.
-              </p>
+              <p className="text-muted-foreground">No posts found. Try a different search term or category.</p>
             </div>
           )}
         </div>

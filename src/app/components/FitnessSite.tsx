@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Image from 'next/image';
 import Link from 'next/link';
+import { useToast } from '@/components/ui/use-toast';
+import { blogPosts } from '../blog/data';
 
 // ✅ Service Card Component
 const ServiceCard = ({ title, description, image }: { title: string; description: string; image: string }) => (
@@ -101,24 +103,6 @@ export default function FitnessSite() {
       title: "Dance Fit",
       description: "Fun cardio, improve coordination and hit your mood - all while dancing to fun music!",
       image: "/images/dance-fit.jpg"
-    }
-  ];
-
-  const blogPosts = [
-    {
-      image: "/images/nutrition.jpg",
-      title: "Blog title heading will go here",
-      excerpt: "Short description of the blog post will go here. Keep it brief and engaging."
-    },
-    {
-      image: "/images/yoga.jpg",
-      title: "Blog title heading will go here",
-      excerpt: "Short description of the blog post will go here. Keep it brief and engaging."
-    },
-    {
-      image: "/images/swimming.jpg",
-      title: "Blog title heading will go here",
-      excerpt: "Short description of the blog post will go here. Keep it brief and engaging."
     }
   ];
 
@@ -256,7 +240,7 @@ export default function FitnessSite() {
               <div className="bg-[#bca16b] p-6 rounded-2xl">
                 <h4 className="text-black text-xl font-bold mb-3">Specialized Formats</h4>
                 <p className="text-black/80 text-base">
-                  Golf Fitness | Aqua Personal Training | Senior Fitness | Therapeutic Stretch | Dance Fit | Yoga
+                  Golf Fitness | Aqua Personal Training | Senior Fitness | Therapeutic Stretch | Dance Fit | Yoga.
                   Focused programs tailored to your unique needs for better movement, confidence, and well-being.
                 </p>
               </div>
@@ -338,6 +322,9 @@ export default function FitnessSite() {
                 </div>
               ))}
             </div>
+            <p className="text-muted-foreground">
+              No posts found. Try a different search term or category.
+            </p>
           </div>
         </section>
 
@@ -367,7 +354,7 @@ export default function FitnessSite() {
                   </p>
                   <p className="text-black/90 text-xl leading-relaxed">
                     My passion is empowering individuals of all ages to achieve their health journey. 
-                    Join me, and let's work on your fitness aspirations together!
+                    Let&apos;s work on your fitness aspirations together!
                   </p>
                 </div>
               </div>

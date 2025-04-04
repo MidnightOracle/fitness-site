@@ -1,6 +1,8 @@
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+
 const https = require('https');
-const fs = require('fs');
-const path = require('path');
 
 const images = {
   'hero.jpg': 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=1200', // meditation sunset
