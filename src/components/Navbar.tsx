@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation';
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
@@ -24,9 +23,6 @@ export default function Navbar() {
       // Update scroll progress
       const scrolled = (scrollPosition / (docHeight - windowHeight)) * 100;
       setScrollProgress(scrolled);
-      
-      // Show/hide scroll to top button
-      setShowScrollTop(scrollPosition > windowHeight);
     };
 
     window.addEventListener('scroll', handleScroll);
