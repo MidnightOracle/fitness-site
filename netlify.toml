@@ -3,12 +3,14 @@
   publish = ".next"
 
 [build.environment]
-  NEXT_PUBLIC_BASE_URL = "/"
+  NEXT_RUNTIME = "nodejs18.x"
   NODE_VERSION = "18"
-  NPM_VERSION = "9"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+  [plugins.inputs]
+    skipBuild = false
+    skipInstall = false
 
 [functions]
   included_files = ["src/app/**/*"] 
