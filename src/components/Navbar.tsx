@@ -91,71 +91,75 @@ export default function Navbar() {
       </div>
 
       {/* Header/Nav */}
-      <header className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? 'bg-black/90 backdrop-blur-sm shadow-lg' : isDarkBg ? 'bg-black' : 'bg-transparent'
       }`}>
-        <div className="container mx-auto px-4 md:px-16 py-8 flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-[#bca16b] transition-colors hover:text-[#d4b87d]">Logo</Link>
-          <nav>
-            <ul className="flex gap-8">
-              <li>
-                <Link 
-                  href="/" 
-                  className={`text-lg transition-colors ${
-                    pathname === '/' ? 'text-[#bca16b]' : 'hover:text-[#bca16b]'
-                  }`}
-                >
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/#feel-good-move-better" 
-                  onClick={(e) => scrollToSection(e, 'feel-good-move-better')}
-                  className="text-lg transition-colors hover:text-[#bca16b]"
-                >
-                  Services
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/#gallery" 
-                  onClick={(e) => scrollToSection(e, 'gallery')}
-                  className="text-lg transition-colors hover:text-[#bca16b]"
-                >
-                  Gallery
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/#blog" 
-                  onClick={(e) => scrollToSection(e, 'blog')}
-                  className="text-lg transition-colors hover:text-[#bca16b]"
-                >
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/#about" 
-                  onClick={(e) => scrollToSection(e, 'about')}
-                  className="text-lg transition-colors hover:text-[#bca16b]"
-                >
-                  About Me
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  href="/contact" 
-                  className={`text-lg transition-colors ${
-                    pathname === '/contact' ? 'text-[#bca16b]' : 'hover:text-[#bca16b]'
-                  }`}
-                >
-                  Contact
-                </Link>
-              </li>
-            </ul>
-          </nav>
+        <div className="container mx-auto px-4 md:px-16 py-6">
+          <div className="flex justify-between items-center">
+            <Link href="/" className="text-2xl font-bold text-[#bca16b] transition-colors hover:text-[#d4b87d]">
+              Victoria Villano Fitness
+            </Link>
+            <nav className="hidden md:block">
+              <ul className="flex gap-8">
+                <li>
+                  <Link 
+                    href="/" 
+                    className={`text-lg font-medium transition-colors ${
+                      pathname === '/' ? 'text-[#bca16b]' : 'text-white hover:text-[#bca16b]'
+                    }`}
+                  >
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    href="/#feel-good-move-better" 
+                    onClick={(e) => scrollToSection(e, 'feel-good-move-better')}
+                    className="text-lg font-medium text-white transition-colors hover:text-[#bca16b]"
+                  >
+                    Services
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    href="/#gallery" 
+                    onClick={(e) => scrollToSection(e, 'gallery')}
+                    className="text-lg font-medium text-white transition-colors hover:text-[#bca16b]"
+                  >
+                    Gallery
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    href="/#blog" 
+                    onClick={(e) => scrollToSection(e, 'blog')}
+                    className="text-lg font-medium text-white transition-colors hover:text-[#bca16b]"
+                  >
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    href="/#about" 
+                    onClick={(e) => scrollToSection(e, 'about')}
+                    className="text-lg font-medium text-white transition-colors hover:text-[#bca16b]"
+                  >
+                    About Me
+                  </Link>
+                </li>
+                <li>
+                  <Link 
+                    href="/contact" 
+                    className={`text-lg font-medium transition-colors ${
+                      pathname === '/contact' ? 'text-[#bca16b]' : 'text-white hover:text-[#bca16b]'
+                    }`}
+                  >
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </div>
       </header>
     </>

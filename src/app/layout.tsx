@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Fitness Website",
-  description: "Professional fitness training and coaching services",
+  title: "Victoria Villano Fitness",
+  description: "Professional fitness training and coaching services in Palm Coast",
 };
 
 export default function RootLayout({
@@ -20,10 +20,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-black text-white min-h-screen`}>
+    <html lang="en" className="scroll-smooth">
+      <body className={`${inter.className} bg-black text-white min-h-screen relative`}>
         <Navbar />
-        {children}
+        <main className="relative">
+          {children}
+        </main>
       </body>
     </html>
   );
