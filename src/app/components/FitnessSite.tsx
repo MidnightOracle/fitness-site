@@ -186,61 +186,38 @@ export default function FitnessSite() {
         </section>
 
         {/* Services Section */}
-        <section id="feel-good-move-better" className="bg-[#bca16b] py-20">
-          <div className="container mx-auto px-16">
-            <h2 className="text-black text-5xl font-bold text-center mb-20">Feel Good, Move Better</h2>
-            <div className="grid grid-cols-3 gap-12">
+        <section id="feel-good-move-better" className="py-24 bg-black">
+          <div className="container mx-auto px-4 md:px-16">
+            <h2 className="text-5xl font-bold mb-16 text-[#bca16b]">Feel Good, Move Better</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
               {services.map((service, i) => (
-                <div key={i} className="text-center">
-                  <div className="rounded-2xl overflow-hidden mb-4">
-                    <Image
-                      src={service.image}
-                      alt={service.title}
-                      width={400}
-                      height={300}
-                      className="w-full h-[250px] object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://placehold.co/400x300/111111/FFFFFF?text=" + service.title;
-                      }}
-                    />
-                  </div>
-                  <h3 className="text-black text-xl font-bold mb-2">{service.title}</h3>
-                  <p className="text-black/80 text-base">{service.description}</p>
-                </div>
+                <ServiceCard
+                  key={i}
+                  title={service.title}
+                  description={service.description}
+                  image={service.image}
+                />
               ))}
             </div>
           </div>
         </section>
 
         {/* Private Training & Specialized Sessions Section */}
-        <section className="bg-black py-20">
-          <div className="container mx-auto px-16">
-            <div className="bg-[#bca16b] rounded-2xl overflow-hidden mb-8">
-              <div className="flex items-center">
-                <div className="w-[200px] relative h-[100px]">
-                  <Image
-                    src="/images/yoga-silhouette.jpg"
-                    alt="Yoga silhouette"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <h3 className="text-black text-2xl font-bold px-6">Private Training & Specialized Sessions</h3>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-8">
-              <div className="bg-[#bca16b] p-6 rounded-2xl">
-                <h4 className="text-black text-xl font-bold mb-3">Private Training</h4>
-                <p className="text-black/80 text-base">
+        <section className="py-24 bg-black">
+          <div className="container mx-auto px-4 md:px-16">
+            <h2 className="text-4xl font-bold mb-12 text-[#bca16b]">Private Training & Specialized Sessions</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              <div>
+                <h3 className="text-2xl font-bold mb-4 text-[#bca16b]">Private Training</h3>
+                <p className="text-lg text-gray-400 leading-relaxed">
                   1-on-1 sessions customized to your personal fitness goals — whether you want to improve strength, 
                   mobility, balance, or simply feel better.
                 </p>
               </div>
-              <div className="bg-[#bca16b] p-6 rounded-2xl">
-                <h4 className="text-black text-xl font-bold mb-3">Specialized Formats</h4>
-                <p className="text-black/80 text-base">
-                  Golf Fitness | Aqua Personal Training | Senior Fitness | Therapeutic Stretch | Dance Fit | Yoga.
+              <div>
+                <h3 className="text-2xl font-bold mb-4 text-[#bca16b]">Specialized Formats</h3>
+                <p className="text-lg text-gray-400 leading-relaxed">
+                  Golf Fitness | Aqua Personal Training | Senior Fitness | Therapeutic Stretch | Dance Fit | Yoga. 
                   Focused programs tailored to your unique needs for better movement, confidence, and well-being.
                 </p>
               </div>
