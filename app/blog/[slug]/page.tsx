@@ -16,19 +16,14 @@ type Props = {
   };
 };
 
-// Helper function to generate table of contents from content string
+// Helper function to generate table of contents
 function generateTOC(content: string) {
   const headings = content.match(/<h2>(.*?)<\/h2>/g) || [];
   return headings.map(heading => heading.replace(/<\/?h2>/g, ''));
 }
 
-export default function BlogPostPage({ params }: Props) {
-  const [activeHeading, setActiveHeading] = useState('');
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const articleRef = useRef<HTMLElement>(null);
-  const { toast } = useToast();
-
-  const post = blogPosts.find((post) => post.slug === params.slug);
+export default async function BlogPostPage({ params }: Props): Promise<JSX.Element> {
+  const post = blogPosts.find(post => post.slug === params.slug);
   if (!post) notFound();
 
   const relatedPosts = blogPosts
@@ -37,11 +32,30 @@ export default function BlogPostPage({ params }: Props) {
 
   const tableOfContents = generateTOC(post.content);
 
+  return (
+    <ClientPage post={post} relatedPosts={relatedPosts} tableOfContents={tableOfContents} />
+  );
+}
+
+function ClientPage({
+  post,
+  relatedPosts,
+  tableOfContents,
+}: {
+  post: any;
+  relatedPosts: any[];
+  tableOfContents: string[];
+}) {
+  const [activeHeading, setActiveHeading] = useState('');
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const articleRef = useRef<HTMLElement>(null);
+  const { toast } = useToast();
+
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
+      const scrollPosition = window.scrollY;
       const windowHeight = window.innerHeight;
-      setShowScrollTop(scrollY > windowHeight);
+      setShowScrollTop(scrollPosition > windowHeight);
 
       if (articleRef.current) {
         const headings = articleRef.current.querySelectorAll('h2');
@@ -76,8 +90,8 @@ export default function BlogPostPage({ params }: Props) {
       case 'copy':
         await navigator.clipboard.writeText(url);
         toast({
-          title: "Link copied!",
-          description: "The article URL has been copied to your clipboard.",
+          title: 'Link copied!',
+          description: 'The article URL has been copied to your clipboard.',
         });
         break;
     }
@@ -85,7 +99,7 @@ export default function BlogPostPage({ params }: Props) {
 
   return (
     <main className="text-white pt-24">
-      {/* Hero */}
+      {/* Hero Section */}
       <section className="relative h-[600px]">
         <Image
           src={post.image}
@@ -98,7 +112,10 @@ export default function BlogPostPage({ params }: Props) {
           <div className="container mx-auto px-4 md:px-16">
             <div className="max-w-[800px]">
               <div className="flex gap-4 text-sm text-gray-300 mb-4">
-                <Link href={`/blog?category=${post.category}`} className="bg-[#bca16b] text-black px-4 py-1 rounded-full hover:bg-[#d4b87d]">
+                <Link
+                  href={`/blog?category=${post.category}`}
+                  className="bg-[#bca16b] text-black px-4 py-1 rounded-full hover:bg-[#d4b87d]"
+                >
                   {post.category}
                 </Link>
                 <span>•</span>
@@ -113,7 +130,7 @@ export default function BlogPostPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Article Content */}
+      {/* Article Content with Table of Contents */}
       <article className="py-20" ref={articleRef}>
         <div className="container mx-auto px-4 md:px-16">
           <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-12">
@@ -148,11 +165,11 @@ export default function BlogPostPage({ params }: Props) {
                 </div>
               )}
 
-              {/* Share Buttons */}
+              {/* Share Widget */}
               <div className="bg-[#111] rounded-2xl p-6">
                 <h3 className="text-lg font-bold mb-4">Share this article</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  {['twitter', 'facebook', 'linkedin', 'copy'].map(platform => (
+                  {['twitter', 'facebook', 'linkedin', 'copy'].map((platform) => (
                     <Button
                       key={platform}
                       variant="outline"
