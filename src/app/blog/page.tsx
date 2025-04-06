@@ -1,48 +1,38 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { blogPosts, BlogPost } from './data';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { blogPosts, type BlogPost } from './data';
-
-const POSTS_PER_PAGE = 9;
 
 function BlogContent() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
   const searchParams = useSearchParams();
+  const search = searchParams.get('search') || '';
+  const category = searchParams.get('category') || 'all';
+  const page = parseInt(searchParams.get('page') || '1');
+  const postsPerPage = 6;
 
-  // Get unique categories from blog posts
-  const categories = Array.from(new Set(blogPosts.map(post => post.category)));
-
-  // Handle category from URL params
-  useEffect(() => {
-    const category = searchParams.get('category');
-    if (category) {
-      setSelectedCategory(category);
-    }
-  }, [searchParams]);
-
-  // Filter posts based on search query and category
+  // Filter posts based on search and category
   const filteredPosts = blogPosts.filter(post => {
-    const matchesSearch = searchQuery.trim() === '' || 
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.category.toLowerCase().includes(searchQuery.toLowerCase());
-
-    const matchesCategory = selectedCategory === '' || post.category === selectedCategory;
-
+    const matchesSearch = search === '' || 
+      post.title.toLowerCase().includes(search.toLowerCase()) ||
+      post.excerpt.toLowerCase().includes(search.toLowerCase()) ||
+      post.category.toLowerCase().includes(search.toLowerCase());
+    
+    const matchesCategory = category === 'all' || post.category === category;
+    
     return matchesSearch && matchesCategory;
   });
 
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
-  const paginatedPosts = filteredPosts.slice(
-    (currentPage - 1) * POSTS_PER_PAGE,
-    currentPage * POSTS_PER_PAGE
-  );
+  // Pagination
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const startIndex = (page - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const currentPosts = filteredPosts.slice(startIndex, endIndex);
+
+  // Get unique categories
+  const categories = ['all', ...new Set(blogPosts.map(post => post.category))];
 
   return (
     <div className="container mx-auto px-4 py-20">
@@ -61,24 +51,27 @@ function BlogContent() {
             type="text"
             placeholder="Search articles..."
             className="flex-1 px-6 py-3 rounded-full bg-black/20 border border-gray-700 focus:border-[#bca16b] focus:outline-none text-white"
-            defaultValue={searchQuery}
+            defaultValue={search}
             onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('search', e.target.value);
+              params.set('page', '1');
+              window.location.search = params.toString();
             }}
           />
           <select
             className="px-6 py-3 rounded-full bg-black/20 border border-gray-700 focus:border-[#bca16b] focus:outline-none text-white"
-            defaultValue={selectedCategory}
+            defaultValue={category}
             onChange={(e) => {
-              setSelectedCategory(e.target.value);
-              setCurrentPage(1);
+              const params = new URLSearchParams(searchParams.toString());
+              params.set('category', e.target.value);
+              params.set('page', '1');
+              window.location.search = params.toString();
             }}
           >
-            <option value="all">All</option>
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category.charAt(0).toUpperCase() + category.slice(1)}
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
               </option>
             ))}
           </select>
@@ -87,7 +80,7 @@ function BlogContent() {
 
       {/* Blog Posts Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 mb-12">
-        {paginatedPosts.map((post) => (
+        {currentPosts.map((post) => (
           <article key={post.slug} className="bg-black/20 rounded-2xl overflow-hidden">
             <div className="relative h-64">
               <Image
@@ -121,22 +114,12 @@ function BlogContent() {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center gap-4">
-          <Link
-            href={`?page=${Math.max(currentPage - 1, 1)}${selectedCategory !== 'all' ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
-            className={`px-4 py-2 rounded-full ${
-              currentPage === 1
-                ? 'bg-black/20 text-white cursor-not-allowed'
-                : 'bg-black/20 text-white hover:bg-black/40'
-            }`}
-          >
-            Previous
-          </Link>
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
             <Link
               key={pageNum}
-              href={`?page=${pageNum}${selectedCategory !== 'all' ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
+              href={`?page=${pageNum}${search ? `&search=${search}` : ''}${category !== 'all' ? `&category=${category}` : ''}`}
               className={`px-4 py-2 rounded-full ${
-                pageNum === currentPage
+                pageNum === page
                   ? 'bg-[#bca16b] text-black'
                   : 'bg-black/20 text-white hover:bg-black/40'
               }`}
@@ -144,16 +127,6 @@ function BlogContent() {
               {pageNum}
             </Link>
           ))}
-          <Link
-            href={`?page=${Math.min(currentPage + 1, totalPages)}${selectedCategory !== 'all' ? `&category=${selectedCategory}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
-            className={`px-4 py-2 rounded-full ${
-              currentPage === totalPages
-                ? 'bg-black/20 text-white cursor-not-allowed'
-                : 'bg-black/20 text-white hover:bg-black/40'
-            }`}
-          >
-            Next
-          </Link>
         </div>
       )}
     </div>

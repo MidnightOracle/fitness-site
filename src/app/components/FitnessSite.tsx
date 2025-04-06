@@ -8,21 +8,26 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Image from 'next/image';
 import Link from 'next/link';
+import { blogPosts } from '../blog/data';
 
 // ✅ Service Card Component
 const ServiceCard = ({ title, description, image }: { title: string; description: string; image: string }) => (
-  <div className="group">
-    <div className="overflow-hidden mb-6">
+  <div className="text-center">
+    <div className="rounded-2xl overflow-hidden mb-4">
       <Image
         src={image}
         alt={title}
         width={400}
         height={300}
-        className="w-full h-[300px] object-cover"
+        className="w-full h-[250px] object-cover"
+        onError={(e) => {
+          const target = e.target as HTMLImageElement;
+          target.src = "https://placehold.co/400x300/111111/FFFFFF?text=" + title;
+        }}
       />
     </div>
-    <h3 className="font-bold text-[24px] text-[#bca16b] mb-3">{title}</h3>
-    <p className="text-[18px] text-gray-400 leading-relaxed">{description}</p>
+    <h3 className="text-black text-xl font-bold mb-2">{title}</h3>
+    <p className="text-black/80 text-base">{description}</p>
   </div>
 );
 
@@ -88,37 +93,19 @@ export default function FitnessSite() {
 
   const services = [
     {
-      title: "Yoga/Golf Fitness",
-      description: "Build strength, flexibility, and balance to move better on and off the course.",
-      image: "/images/yoga-golf.jpg"
+      title: "Personal Training",
+      description: "One-on-one sessions tailored to your fitness goals and needs.",
+      image: "/images/personal-training.jpg"
     },
     {
-      title: "Aqua Fitness",
-      description: "A refreshing full-body workout using water resistance in a social and safe environment.",
-      image: "/images/aqua-fitness.jpg"
+      title: "Group Classes",
+      description: "Join our energetic group classes for a fun and motivating workout experience.",
+      image: "/images/group-classes.jpg"
     },
     {
-      title: "Dance Fit",
-      description: "Fun cardio, improve coordination and hit your mood - all while dancing to fun music!",
-      image: "/images/dance-fit.jpg"
-    }
-  ];
-
-  const blogPosts = [
-    {
-      image: "/images/nutrition.jpg",
-      title: "Blog title heading will go here",
-      excerpt: "Short description of the blog post will go here. Keep it brief and engaging."
-    },
-    {
-      image: "/images/yoga.jpg",
-      title: "Blog title heading will go here",
-      excerpt: "Short description of the blog post will go here. Keep it brief and engaging."
-    },
-    {
-      image: "/images/swimming.jpg",
-      title: "Blog title heading will go here",
-      excerpt: "Short description of the blog post will go here. Keep it brief and engaging."
+      title: "Online Coaching",
+      description: "Get professional guidance and support from anywhere in the world.",
+      image: "/images/online-coaching.jpg"
     }
   ];
 
@@ -207,23 +194,12 @@ export default function FitnessSite() {
             <h2 className="text-black text-5xl font-bold text-center mb-20">Feel Good, Move Better</h2>
             <div className="grid grid-cols-3 gap-12">
               {services.map((service, i) => (
-                <div key={i} className="text-center">
-                  <div className="rounded-2xl overflow-hidden mb-4">
-                    <Image
-                      src={service.image}
-                      alt={service.title}
-                      width={400}
-                      height={300}
-                      className="w-full h-[250px] object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://placehold.co/400x300/111111/FFFFFF?text=" + service.title;
-                      }}
-                    />
-                  </div>
-                  <h3 className="text-black text-xl font-bold mb-2">{service.title}</h3>
-                  <p className="text-black/80 text-base">{service.description}</p>
-                </div>
+                <ServiceCard
+                  key={i}
+                  title={service.title}
+                  description={service.description}
+                  image={service.image}
+                />
               ))}
             </div>
           </div>
@@ -317,7 +293,7 @@ export default function FitnessSite() {
               Your go-to source for practical advice, mindful movement, and healthy living.
             </p>
             <div className="grid grid-cols-3 gap-12">
-              {blogPosts.map((post, i) => (
+              {blogPosts.slice(0, 3).map((post, i) => (
                 <div key={i}>
                   <div className="mb-6">
                     <Image
@@ -359,7 +335,7 @@ export default function FitnessSite() {
                 />
               </div>
               <div className="flex flex-col justify-center">
-                <h2 className="text-black text-5xl font-bold mb-10">Hi, I'm Victoria</h2>
+                <h2 className="text-black text-5xl font-bold mb-10">Hi, I&apos;m Victoria</h2>
                 <div className="space-y-6">
                   <p className="text-black/90 text-xl leading-relaxed">
                     A certified personal trainer with 20+ years experience helping people move better and live healthier. 
@@ -367,7 +343,7 @@ export default function FitnessSite() {
                   </p>
                   <p className="text-black/90 text-xl leading-relaxed">
                     My passion is empowering individuals of all ages to achieve their health journey. 
-                    Join me, and let's work on your fitness aspirations together!
+                    Join me, and let&apos;s work on your fitness aspirations together!
                   </p>
                 </div>
               </div>
