@@ -8,13 +8,42 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 import { blogPosts } from '../data';
 
-export const dynamic = 'force-dynamic';
-
 type Props = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
+
+export default function BlogPostPage(props: Props) {
+  const [activeHeading, setActiveHeading] = useState('');
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const articleRef = useRef<HTMLElement>(null);
+  const { toast } = useToast();
+  const [post, setPost] = useState<typeof blogPosts[0] | null>(null);
+  const [relatedPosts, setRelatedPosts] = useState<typeof blogPosts>([]);
+  const [tableOfContents, setTableOfContents] = useState<string[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const { slug } = await props.params;
+      const foundPost = blogPosts.find((p) => p.slug === slug);
+      if (!foundPost) {
+        notFound();
+        return;
+      }
+      setPost(foundPost);
+
+      const related = blogPosts
+        .filter((p) => p.category === foundPost.category && p.slug !== foundPost.slug)
+        .slice(0, 3);
+      setRelatedPosts(related);
+
+      const toc = generateTOC(foundPost.content);
+      setTableOfContents(toc);
+    }
+
+    fetchData();
+  }, [props.params]);
 
 // Helper function to generate table of contents
 function generateTOC(content: string) {
@@ -231,4 +260,15 @@ function ClientPage({
       </button>
     </main>
   );
+}
+return (
+  <main className="text-white pt-24">
+    {/* Render your component content here, using the post, relatedPosts, and tableOfContents state */}
+  </main>
+);
+}
+
+function generateTOC(content: string): string[] {
+const headings = content.match(/<h2>(.*?)<\/h2>/g) || [];
+return headings.map((heading) => heading.replace(/<\/?h2>/g, ''));
 }
