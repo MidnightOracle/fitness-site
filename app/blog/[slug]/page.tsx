@@ -6,7 +6,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { blogPosts, type BlogPost } from '../data';
+import { blogPosts } from '../data';
+
+export const dynamic = 'force-dynamic';
 
 type Props = {
   params: {
@@ -14,7 +16,7 @@ type Props = {
   };
 };
 
-// Helper function to generate table of contents
+// Helper function to generate table of contents from content string
 function generateTOC(content: string) {
   const headings = content.match(/<h2>(.*?)<\/h2>/g) || [];
   return headings.map(heading => heading.replace(/<\/?h2>/g, ''));
@@ -26,27 +28,21 @@ export default function BlogPostPage({ params }: Props) {
   const articleRef = useRef<HTMLElement>(null);
   const { toast } = useToast();
 
-  // Find the current post
-  const post = blogPosts.find(post => post.slug === params.slug);
+  const post = blogPosts.find((post) => post.slug === params.slug);
   if (!post) notFound();
 
-  // Get related posts (same category, excluding current post)
   const relatedPosts = blogPosts
     .filter(p => p.category === post.category && p.slug !== post.slug)
     .slice(0, 3);
 
-  // Generate table of contents
   const tableOfContents = generateTOC(post.content);
 
-  // Handle scroll events
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
+      const scrollY = window.scrollY;
       const windowHeight = window.innerHeight;
-      
-      setShowScrollTop(scrollPosition > windowHeight);
+      setShowScrollTop(scrollY > windowHeight);
 
-      // Track active heading
       if (articleRef.current) {
         const headings = articleRef.current.querySelectorAll('h2');
         for (const heading of headings) {
@@ -63,7 +59,6 @@ export default function BlogPostPage({ params }: Props) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Share functionality
   const handleShare = async (platform: string) => {
     const url = window.location.href;
     const text = `Check out this article: ${post.title}`;
@@ -90,7 +85,7 @@ export default function BlogPostPage({ params }: Props) {
 
   return (
     <main className="text-white pt-24">
-      {/* Hero Section */}
+      {/* Hero */}
       <section className="relative h-[600px]">
         <Image
           src={post.image}
@@ -103,10 +98,7 @@ export default function BlogPostPage({ params }: Props) {
           <div className="container mx-auto px-4 md:px-16">
             <div className="max-w-[800px]">
               <div className="flex gap-4 text-sm text-gray-300 mb-4">
-                <Link 
-                  href={`/blog?category=${post.category}`}
-                  className="bg-[#bca16b] text-black px-4 py-1 rounded-full hover:bg-[#d4b87d]"
-                >
+                <Link href={`/blog?category=${post.category}`} className="bg-[#bca16b] text-black px-4 py-1 rounded-full hover:bg-[#d4b87d]">
                   {post.category}
                 </Link>
                 <span>•</span>
@@ -121,19 +113,17 @@ export default function BlogPostPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Article Content with Table of Contents */}
+      {/* Article Content */}
       <article className="py-20" ref={articleRef}>
         <div className="container mx-auto px-4 md:px-16">
           <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-12">
-            {/* Main Content */}
-            <div 
+            <div
               className="prose prose-lg prose-invert prose-gold max-w-none"
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
             {/* Sidebar */}
             <div className="lg:sticky lg:top-32 h-fit space-y-8">
-              {/* Table of Contents */}
               {tableOfContents.length > 0 && (
                 <div className="bg-[#111] rounded-2xl p-6">
                   <h3 className="text-lg font-bold mb-4">Table of Contents</h3>
@@ -158,38 +148,20 @@ export default function BlogPostPage({ params }: Props) {
                 </div>
               )}
 
-              {/* Share Widget */}
+              {/* Share Buttons */}
               <div className="bg-[#111] rounded-2xl p-6">
                 <h3 className="text-lg font-bold mb-4">Share this article</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    variant="outline"
-                    className="w-full border-[#bca16b] text-[#bca16b] hover:bg-[#bca16b] hover:text-black"
-                    onClick={() => handleShare('twitter')}
-                  >
-                    Twitter
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-[#bca16b] text-[#bca16b] hover:bg-[#bca16b] hover:text-black"
-                    onClick={() => handleShare('facebook')}
-                  >
-                    Facebook
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-[#bca16b] text-[#bca16b] hover:bg-[#bca16b] hover:text-black"
-                    onClick={() => handleShare('linkedin')}
-                  >
-                    LinkedIn
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-[#bca16b] text-[#bca16b] hover:bg-[#bca16b] hover:text-black"
-                    onClick={() => handleShare('copy')}
-                  >
-                    Copy Link
-                  </Button>
+                  {['twitter', 'facebook', 'linkedin', 'copy'].map(platform => (
+                    <Button
+                      key={platform}
+                      variant="outline"
+                      className="w-full border-[#bca16b] text-[#bca16b] hover:bg-[#bca16b] hover:text-black"
+                      onClick={() => handleShare(platform)}
+                    >
+                      {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                    </Button>
+                  ))}
                 </div>
               </div>
             </div>
@@ -242,4 +214,4 @@ export default function BlogPostPage({ params }: Props) {
       </button>
     </main>
   );
-} 
+}
