@@ -7,8 +7,6 @@ import { usePathname } from 'next/navigation';
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
   // Handle scroll events
@@ -18,68 +16,16 @@ export default function Navbar() {
       const windowHeight = window.innerHeight;
       const docHeight = document.documentElement.scrollHeight;
       
-      // Update navbar background
       setIsScrolled(scrollPosition > 50);
-      
-      // Update scroll progress
-      const scrolled = (scrollPosition / (docHeight - windowHeight)) * 100;
-      setScrollProgress(scrolled);
-      
-      // Show/hide scroll to top button
-      setShowScrollTop(scrollPosition > windowHeight);
+      setScrollProgress((scrollPosition / (docHeight - windowHeight)) * 100);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Handle hash navigation and smooth scrolling
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash;
-      if (hash) {
-        const element = document.getElementById(hash.substring(1));
-        if (element) {
-          setTimeout(() => {
-            element.scrollIntoView({ behavior: 'smooth' });
-          }, 100);
-        }
-      }
-    };
-
-    // Initial check for hash
-    handleHashChange();
-
-    // Listen for hash changes
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
-
-  // Set mounted to true after initial render
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   // Determine if we're on a dark background page
   const isDarkBg = pathname === '/blog' || pathname.startsWith('/blog/');
-
-  const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-    e.preventDefault();
-    const element = document.getElementById(sectionId);
-    if (element) {
-      // Update URL first
-      window.history.pushState(null, '', `#${sectionId}`);
-      // Then scroll to the element
-      setTimeout(() => {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
-  };
-
-  // Don't render anything until after hydration
-  if (!mounted) {
-    return null;
-  }
 
   return (
     <>
@@ -114,8 +60,7 @@ export default function Navbar() {
               </li>
               <li>
                 <Link 
-                  href="/#feel-good-move-better" 
-                  onClick={(e) => scrollToSection(e, 'feel-good-move-better')}
+                  href="/#services" 
                   className="text-lg transition-colors hover:text-[#bca16b]"
                 >
                   Services
@@ -124,7 +69,6 @@ export default function Navbar() {
               <li>
                 <Link 
                   href="/#gallery" 
-                  onClick={(e) => scrollToSection(e, 'gallery')}
                   className="text-lg transition-colors hover:text-[#bca16b]"
                 >
                   Gallery
@@ -132,9 +76,12 @@ export default function Navbar() {
               </li>
               <li>
                 <Link 
-                  href="/#blog" 
-                  onClick={(e) => scrollToSection(e, 'blog')}
-                  className="text-lg transition-colors hover:text-[#bca16b]"
+                  href="/blog" 
+                  className={`text-lg transition-colors ${
+                    pathname === '/blog' || pathname.startsWith('/blog/') 
+                      ? 'text-[#bca16b]' 
+                      : 'hover:text-[#bca16b]'
+                  }`}
                 >
                   Blog
                 </Link>
@@ -142,7 +89,6 @@ export default function Navbar() {
               <li>
                 <Link 
                   href="/#about" 
-                  onClick={(e) => scrollToSection(e, 'about')}
                   className="text-lg transition-colors hover:text-[#bca16b]"
                 >
                   About Me

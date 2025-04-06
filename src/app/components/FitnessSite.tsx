@@ -144,9 +144,9 @@ export default function FitnessSite() {
           <nav>
             <ul className="flex gap-8">
               <li><Link href="/" className="text-lg transition-colors hover:text-[#bca16b]">Home</Link></li>
-              <li><Link href="/#feel-good-move-better" className="text-lg transition-colors hover:text-[#bca16b]">Services</Link></li>
+              <li><Link href="/#services" className="text-lg transition-colors hover:text-[#bca16b]">Services</Link></li>
               <li><Link href="/#gallery" className="text-lg transition-colors hover:text-[#bca16b]">Gallery</Link></li>
-              <li><Link href="/#blog" className="text-lg transition-colors hover:text-[#bca16b]">Blog</Link></li>
+              <li><Link href="/blog" className="text-lg transition-colors hover:text-[#bca16b]">Blog</Link></li>
               <li><Link href="/#about" className="text-lg transition-colors hover:text-[#bca16b]">About Me</Link></li>
               <li><Link href="/contact" className="text-lg transition-colors hover:text-[#bca16b]">Contact</Link></li>
             </ul>
@@ -176,10 +176,6 @@ export default function FitnessSite() {
               fill
               className="object-cover"
               priority
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "https://placehold.co/1920x1080/111111/FFFFFF?text=Fitness+Training";
-              }}
             />
           </div>
           {/* Right Content */}
@@ -194,15 +190,15 @@ export default function FitnessSite() {
               <p className="text-gray-400 text-2xl mb-12 max-w-[500px] leading-relaxed">
                 Join group classes or book a private session to move, feel, and live better in Palm Coast.
               </p>
-              <Button className="bg-[#bca16b] hover:bg-[#d4b87d] text-black text-2xl px-12 py-6 rounded-full">
+              <Button className="bg-[#bca16b] hover:bg-[#d4b87d] text-black text-xl px-10 py-4 rounded-full">
                 <Link href="/contact">Book a Session →</Link>
               </Button>
             </div>
           </div>
         </section>
 
-        {/* Services Section */}
-        <section id="feel-good-move-better" className="bg-[#bca16b] py-20">
+        {/* Feel Good, Move Better Section */}
+        <section className="bg-[#bca16b] py-20">
           <div className="container mx-auto px-16">
             <h2 className="text-black text-5xl font-bold text-center mb-20">Feel Good, Move Better</h2>
             <div className="grid grid-cols-3 gap-12">
@@ -215,10 +211,6 @@ export default function FitnessSite() {
                       width={400}
                       height={300}
                       className="w-full h-[250px] object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://placehold.co/400x300/111111/FFFFFF?text=" + service.title;
-                      }}
                     />
                   </div>
                   <h3 className="text-black text-xl font-bold mb-2">{service.title}</h3>
@@ -265,7 +257,7 @@ export default function FitnessSite() {
         </section>
 
         {/* Image Gallery Section */}
-        <section id="gallery" className="bg-[#bca16b] py-20">
+        <section className="bg-[#bca16b] py-20">
           <div className="container mx-auto px-16">
             <h2 className="text-black text-5xl font-bold text-center mb-20">Image Gallery</h2>
             <div className="relative">
@@ -276,10 +268,6 @@ export default function FitnessSite() {
                   width={1920}
                   height={800}
                   className="w-full h-[700px] object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "https://placehold.co/1920x800/111111/FFFFFF?text=Fitness+Gallery";
-                  }}
                 />
               </div>
               <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-4">
@@ -308,12 +296,10 @@ export default function FitnessSite() {
         </section>
 
         {/* Flow, Strength & Balance Section */}
-        <section id="blog" className="bg-black py-20">
+        <section className="bg-black py-20">
           <div className="container mx-auto px-16">
-            <Link href="/blog">
-              <h2 className="text-white text-5xl font-bold text-center mb-4 hover:text-[#bca16b] transition-colors">Flow, Strength & Balance</h2>
-            </Link>
-            <p className="text-center text-gray-400 text-lg mb-20 max-w-[700px] mx-auto">
+            <h2 className="text-white text-5xl font-bold text-center mb-4">Flow, Strength & Balance</h2>
+            <p className="text-center text-gray-400 text-xl mb-20 max-w-[700px] mx-auto">
               Your go-to source for practical advice, mindful movement, and healthy living.
             </p>
             <div className="grid grid-cols-3 gap-12">
@@ -326,10 +312,6 @@ export default function FitnessSite() {
                       width={400}
                       height={300}
                       className="w-full h-[300px] object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "https://placehold.co/400x300/111111/FFFFFF?text=" + post.title;
-                      }}
                     />
                   </div>
                   <h3 className="text-[#bca16b] text-2xl font-bold mb-4">{post.title}</h3>
@@ -342,7 +324,7 @@ export default function FitnessSite() {
         </section>
 
         {/* About Section */}
-        <section id="about" className="bg-[#bca16b] py-20">
+        <section className="bg-[#bca16b] py-20">
           <div className="container mx-auto px-16">
             <div className="grid grid-cols-2 gap-20">
               <div>
@@ -352,10 +334,6 @@ export default function FitnessSite() {
                   width={600}
                   height={500}
                   className="w-full h-[500px] object-cover rounded-2xl"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "https://placehold.co/600x500/111111/FFFFFF?text=Victoria";
-                  }}
                 />
               </div>
               <div className="flex flex-col justify-center">
