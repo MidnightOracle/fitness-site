@@ -1,245 +1,164 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { blogPosts, BlogPost } from '../data';
 import Image from 'next/image';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { blogPosts, type BlogPost } from '../data';
 
-type Props = {
-  params: {
-    slug: string;
-  };
-};
+function BlogPostContent() {
+  const searchParams = useSearchParams();
+  const slug = searchParams.get('slug');
+  const post = blogPosts.find(p => p.slug === slug);
 
-// Helper function to generate table of contents
-function generateTOC(content: string) {
-  const headings = content.match(/<h2>(.*?)<\/h2>/g) || [];
-  return headings.map(heading => heading.replace(/<\/?h2>/g, ''));
-}
-
-export default function BlogPostPage({ params }: Props) {
-  const [activeHeading, setActiveHeading] = useState('');
-  const [showScrollTop, setShowScrollTop] = useState(false);
-  const articleRef = useRef<HTMLElement>(null);
-  const { toast } = useToast();
-
-  // Find the current post
-  const post = blogPosts.find(post => post.slug === params.slug);
-  if (!post) notFound();
-
-  // Get related posts (same category, excluding current post)
-  const relatedPosts = blogPosts
-    .filter(p => p.category === post.category && p.slug !== post.slug)
-    .slice(0, 3);
+  if (!post) {
+    return (
+      <div className="container mx-auto px-4 py-20 text-center">
+        <h1 className="text-4xl font-bold mb-4">Post not found</h1>
+        <p className="text-gray-400 mb-8">The blog post you&apos;re looking for doesn&apos;t exist.</p>
+        <Link href="/blog" className="text-[#bca16b] hover:text-[#d4b87d]">
+          ← Back to Blog
+        </Link>
+      </div>
+    );
+  }
 
   // Generate table of contents
-  const tableOfContents = generateTOC(post.content);
-
-  // Handle scroll events
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const windowHeight = window.innerHeight;
-      
-      setShowScrollTop(scrollPosition > windowHeight);
-
-      // Track active heading
-      if (articleRef.current) {
-        const headings = articleRef.current.querySelectorAll('h2');
-        for (const heading of headings) {
-          const { top } = heading.getBoundingClientRect();
-          if (top > 0 && top < windowHeight / 2) {
-            setActiveHeading(heading.textContent || '');
-            break;
-          }
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const toc = post.content
+    .split('\n')
+    .filter(line => line.startsWith('## '))
+    .map(heading => ({
+      text: heading.replace('## ', ''),
+      id: heading.replace('## ', '').toLowerCase().replace(/\s+/g, '-')
+    }));
 
   // Share functionality
-  const handleShare = async (platform: string) => {
-    const url = window.location.href;
-    const text = `Check out this article: ${post.title}`;
-
-    switch (platform) {
-      case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?url=${url}&text=${encodeURIComponent(text)}`);
-        break;
-      case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`);
-        break;
-      case 'linkedin':
-        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`);
-        break;
-      case 'copy':
-        await navigator.clipboard.writeText(url);
-        toast({
-          title: "Link copied!",
-          description: "The article URL has been copied to your clipboard.",
-        });
-        break;
+  const { toast } = useToast();
+  const sharePost = async () => {
+    try {
+      await navigator.share({
+        title: post.title,
+        text: post.excerpt,
+        url: window.location.href
+      });
+    } catch (err) {
+      toast({
+        title: "Share failed",
+        description: "Your browser doesn&apos;t support sharing. Please copy the URL manually."
+      });
     }
   };
 
   return (
-    <main className="text-white pt-24">
+    <div className="container mx-auto px-4 py-20">
       {/* Hero Section */}
-      <section className="relative h-[600px]">
-        <Image
-          src={post.image}
-          alt={post.title}
-          fill
-          className="object-cover opacity-40"
-          priority
-        />
-        <div className="absolute inset-0 flex items-center">
-          <div className="container mx-auto px-4 md:px-16">
-            <div className="max-w-[800px]">
-              <div className="flex gap-4 text-sm text-gray-300 mb-4">
-                <Link 
-                  href={`/blog?category=${post.category}`}
-                  className="bg-[#bca16b] text-black px-4 py-1 rounded-full hover:bg-[#d4b87d]"
+      <div className="max-w-4xl mx-auto mb-20">
+        <div className="relative h-[400px] mb-12">
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            className="object-cover rounded-2xl"
+          />
+        </div>
+        <div className="flex items-center gap-4 mb-6">
+          <span className="text-[#bca16b]">{post.category}</span>
+          <span className="text-gray-400">•</span>
+          <span className="text-gray-400">{post.date}</span>
+          <span className="text-gray-400">•</span>
+          <span className="text-gray-400">{post.readTime} min read</span>
+        </div>
+        <h1 className="text-4xl md:text-5xl font-bold mb-8">{post.title}</h1>
+        <p className="text-xl text-gray-400 mb-12">{post.excerpt}</p>
+      </div>
+
+      {/* Content and Sidebar */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+        {/* Main Content */}
+        <div className="lg:col-span-3">
+          <div 
+            className="prose prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
+        </div>
+
+        {/* Sidebar */}
+        <div className="lg:col-span-1">
+          <div className="sticky top-24">
+            {/* Table of Contents */}
+            {toc.length > 0 && (
+              <div className="bg-black/20 rounded-2xl p-6 mb-8">
+                <h3 className="text-xl font-bold mb-4">Table of Contents</h3>
+                <ul className="space-y-2">
+                  {toc.map((item) => (
+                    <li key={item.id}>
+                      <a 
+                        href={`#${item.id}`}
+                        className="text-gray-400 hover:text-[#bca16b] transition-colors"
+                      >
+                        {item.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Share Buttons */}
+            <div className="bg-black/20 rounded-2xl p-6">
+              <h3 className="text-xl font-bold mb-4">Share this post</h3>
+              <div className="flex gap-4">
+                <button
+                  onClick={sharePost}
+                  className="bg-[#bca16b] hover:bg-[#d4b87d] text-black px-6 py-2 rounded-full transition-colors"
                 >
-                  {post.category}
-                </Link>
-                <span>•</span>
-                <span>{post.date}</span>
-                <span>•</span>
-                <span>{post.readTime}</span>
-              </div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">{post.title}</h1>
-              <p className="text-xl text-gray-300">{post.excerpt}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Article Content with Table of Contents */}
-      <article className="py-20" ref={articleRef}>
-        <div className="container mx-auto px-4 md:px-16">
-          <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-12">
-            {/* Main Content */}
-            <div 
-              className="prose prose-lg prose-invert prose-gold max-w-none"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
-
-            {/* Sidebar */}
-            <div className="lg:sticky lg:top-32 h-fit space-y-8">
-              {/* Table of Contents */}
-              {tableOfContents.length > 0 && (
-                <div className="bg-[#111] rounded-2xl p-6">
-                  <h3 className="text-lg font-bold mb-4">Table of Contents</h3>
-                  <nav>
-                    <ul className="space-y-2">
-                      {tableOfContents.map((heading, index) => (
-                        <li key={index}>
-                          <a
-                            href={`#${heading.toLowerCase().replace(/\s+/g, '-')}`}
-                            className={`block text-sm py-1 transition-colors ${
-                              activeHeading === heading
-                                ? 'text-[#bca16b]'
-                                : 'text-gray-400 hover:text-[#bca16b]'
-                            }`}
-                          >
-                            {heading}
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </nav>
-                </div>
-              )}
-
-              {/* Share Widget */}
-              <div className="bg-[#111] rounded-2xl p-6">
-                <h3 className="text-lg font-bold mb-4">Share this article</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <Button
-                    variant="outline"
-                    className="w-full border-[#bca16b] text-[#bca16b] hover:bg-[#bca16b] hover:text-black"
-                    onClick={() => handleShare('twitter')}
-                  >
-                    Twitter
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-[#bca16b] text-[#bca16b] hover:bg-[#bca16b] hover:text-black"
-                    onClick={() => handleShare('facebook')}
-                  >
-                    Facebook
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-[#bca16b] text-[#bca16b] hover:bg-[#bca16b] hover:text-black"
-                    onClick={() => handleShare('linkedin')}
-                  >
-                    LinkedIn
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="w-full border-[#bca16b] text-[#bca16b] hover:bg-[#bca16b] hover:text-black"
-                    onClick={() => handleShare('copy')}
-                  >
-                    Copy Link
-                  </Button>
-                </div>
+                  Share
+                </button>
               </div>
             </div>
           </div>
         </div>
-      </article>
+      </div>
 
       {/* Related Posts */}
-      {relatedPosts.length > 0 && (
-        <section className="py-20 bg-[#111]">
-          <div className="container mx-auto px-4 md:px-16">
-            <h2 className="text-3xl font-bold mb-12">Related Articles</h2>
-            <div className="grid md:grid-cols-3 gap-12">
-              {relatedPosts.map((post) => (
-                <article key={post.slug} className="group">
-                  <Link href={`/blog/${post.slug}`}>
-                    <div className="relative h-[250px] rounded-2xl overflow-hidden mb-6">
-                      <Image
-                        src={post.image}
-                        alt={post.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="flex gap-4 text-sm text-gray-400 mb-3">
-                      <span>{post.category}</span>
-                      <span>•</span>
-                      <span>{post.readTime}</span>
-                    </div>
-                    <h3 className="text-xl font-bold text-[#bca16b] mb-3 group-hover:text-[#d4b87d] transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="text-gray-400 line-clamp-2">{post.excerpt}</p>
-                  </Link>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      <div className="max-w-4xl mx-auto mt-20">
+        <h2 className="text-3xl font-bold mb-12">Related Posts</h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+          {blogPosts
+            .filter(p => p.category === post.category && p.slug !== post.slug)
+            .slice(0, 3)
+            .map((relatedPost) => (
+              <div key={relatedPost.slug}>
+                <div className="mb-6">
+                  <Image
+                    src={relatedPost.image}
+                    alt={relatedPost.title}
+                    width={400}
+                    height={300}
+                    className="w-full h-[300px] object-cover rounded-2xl"
+                  />
+                </div>
+                <h3 className="text-[#bca16b] text-2xl font-bold mb-4">{relatedPost.title}</h3>
+                <p className="text-gray-400 text-lg mb-6">{relatedPost.excerpt}</p>
+                <Link 
+                  href={`/blog/${relatedPost.slug}`}
+                  className="text-[#bca16b] hover:text-[#d4b87d]"
+                >
+                  Read more →
+                </Link>
+              </div>
+            ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-      {/* Scroll to Top Button */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={`fixed bottom-8 right-8 bg-[#bca16b] hover:bg-[#d4b87d] text-black w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 z-50 ${
-          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-        }`}
-      >
-        ↑
-      </button>
-    </main>
+export default function BlogPostPage() {
+  return (
+    <Suspense fallback={<div className="container mx-auto px-4 py-20">Loading...</div>}>
+      <BlogPostContent />
+    </Suspense>
   );
 } 
