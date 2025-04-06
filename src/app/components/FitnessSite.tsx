@@ -359,7 +359,7 @@ export default function FitnessSite() {
                 />
               </div>
               <div className="flex flex-col justify-center">
-                <h2 className="text-black text-5xl font-bold mb-10">Hi, I'm Victoria</h2>
+                <h2 className="text-black text-5xl font-bold mb-10">Hi, I&apos;m Victoria</h2>
                 <div className="space-y-6">
                   <p className="text-black/90 text-xl leading-relaxed">
                     A certified personal trainer with 20+ years experience helping people move better and live healthier. 
@@ -367,7 +367,7 @@ export default function FitnessSite() {
                   </p>
                   <p className="text-black/90 text-xl leading-relaxed">
                     My passion is empowering individuals of all ages to achieve their health journey. 
-                    Join me, and let's work on your fitness aspirations together!
+                    Join me, and let&apos;s work on your fitness aspirations together!
                   </p>
                 </div>
               </div>
